@@ -9,15 +9,19 @@ namespace WellsMatrixLib
     {
         if (rows == 0 || cols == 0)
         {
-            throw std::invalid_argument("Row size or column size is non positive!");
+            fprintf(stderr, "File %s, Line %d, Function %s(): Row size of Column size is zero.\n", __FILE__, __LINE__, __FUNCTION__);
+        }
+        if (data == nullptr)
+        {
+            fprintf(stderr, "File %s, Line %d, Function %s(): Memory allocation failed.\n", __FILE__, __LINE__, __FUNCTION__);
         }
     }
     template <typename T>
     Matrix<T>::Matrix(const Matrix<T> &other) : rows(other.rows), cols(other.cols), data(other.data)
     {
-        if (other.data == nullptr)
+        if (other.data == nullptr || data == nullptr)
         {
-            throw std::runtime_error("Null pointer detected!");
+            fprintf(stderr, "File %s, Line %d, Function %s(): Memory allocation failed.\n", __FILE__, __LINE__, __FUNCTION__);
         }
     }
     /*
@@ -31,86 +35,138 @@ namespace WellsMatrixLib
     }
 
     template <typename T>
-    void Matrix<T>::Matrix::fill(size_t start_row, size_t end_row, size_t start_col, size_t end_col, T num)
+    bool Matrix<T>::Matrix::fill(size_t start_row, size_t end_row, size_t start_col, size_t end_col, T num)
     {
         if (this->is_empty())
-            throw std::runtime_error("Null pointer detected!");
-        if (start_row < 0 || start_row >= rows || end_row < 0 || end_row >= rows)
-            throw std::out_of_range("Row index out of range!");
-        if (start_col < 0 || start_col >= cols || end_col < 0 || end_col >= cols)
-            throw std::out_of_range("Column index out of range!");
-        for (size_t i = start_row; i <= end_row; i++)
         {
-            for (size_t j = start_col; j <= end_col; j++)
-            {
-                this->data[i * this->cols + j] = num;
-            }
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            return false;
         }
+        if (start_row >= rows || end_row >= rows)
+        {
+            fprintf(stderr, "File %s, Line %d, Function %s(): Row index out of range.\n", __FILE__, __LINE__, __FUNCTION__);
+            return false;
+        }
+        else if (start_col >= cols || end_col >= cols)
+            fprintf(stderr, "File %s, Line %d, Function %s(): Column index out of range.\n", __FILE__, __LINE__, __FUNCTION__);
+        return false;
+        size_t length = (end_row - start_row + 1) * (end_col - start_col + 1);
+        auto start_pos = data + (start_row * cols) + start_col;
+        std::fill(start_pos, start_pos + length, num);
+        return true;
     }
 
     template <typename T>
-    void Matrix<T>::Matrix::fill(T num)
+    bool Matrix<T>::Matrix::fill(T num)
     {
         if (this->is_empty())
-            throw std::runtime_error("Null pointer detected!");
-        for (size_t i = 0; i < this->rows; i++)
         {
-            for (size_t j = 0; j < this->cols; j++)
-            {
-                this->data[i * this->cols + j] = num;
-            }
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            return false;
         }
+        size_t length = (this->rows * this->cols);
+        std::fill(data.get(), data.get() + length, num);
+        return true;
     }
 
     template <typename T>
     T &Matrix<T>::Matrix::operator()(size_t rows, size_t cols)
     {
+        if (rows >= this->rows || cols >= this->cols)
+        {
+            std::out_of_range("Matrix index out of range.\n");
+        }
+        else if (this->data == nullptr)
+        {
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            std::abort();
+        }
+        return this->data[rows * this->cols + cols];
+    }
+    template <typename T>
+    T &Matrix<T>::Matrix::operator()(size_t rows, size_t cols) const
+    {
+        if (rows >= this->rows || cols >= this->cols)
+        {
+            std::out_of_range("Matrix index out of range.\n");
+        }
+        else if (this->data == nullptr)
+        {
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            std::abort();
+        }
+
         return this->data[rows * this->cols + cols];
     }
     template <typename T>
     size_t Matrix<T>::Matrix::get_row()
     {
-        return this->row;
+        if (this->data == nullptr)
+        {
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            std::abort();
+        }
+        return this->rows;
     }
     template <typename T>
     size_t Matrix<T>::Matrix::get_col()
     {
+        if (this->data == nullptr)
+        {
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            std::abort();
+        }
         return this->cols;
     }
     template <typename T>
-    Matrix<T> Matrix<T>::Matrix::operator+(const Matrix<T> &other) const
+    Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) const
     {
         if (this->rows != other.rows || this->cols != other.cols)
         {
-            throw std::runtime_error("Row size or Column size don't match!");
+            fprintf(stderr, "File %s, Line %d, Function %s(): Matrix size can't match. (%zu,%zu) and (%zu,%zu).\n", __FILE__, __LINE__, __FUNCTION__, this->rows, this->cols, other.rows, other.cols);
+            throw std::invalid_argument("Matrix size mismatch");
         }
-        if (this -- > data == nullptr || other.data == nullptr)
+        if (!this->data || !other.data)
         {
-            throw std::runtime_error("Null pointer detected!");
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            throw std::runtime_error("Null pointer detected");
         }
         Matrix<T> result(this->rows, this->cols);
-        for (size_t i = 0; i < this->rows; i++)
+        if (result.data == nullptr)
         {
-            for (size_t j = 0; j < this->cols; j++)
-            {
-                result(i, j) = (i, j) + other(i, j);
-            }
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            throw std::runtime_error("Null pointer detected");
         }
+        size_t length = this->cols * this->rows;
+
+        for (size_t i = 0; i < length; ++i)
+        {
+            result.data[i] = this->data[i] + other.data[i];
+        }
+
+        return result;
     }
     template <typename T>
-    template <typename U>
-    Matrix<T> Matrix<T>::Matrix::operator+(U num)
+    Matrix<T> Matrix<T>::Matrix::operator+(T num)
     {
         if (this->is_empty())
-            throw std::exception("Null pointer detected!");
-        Matrix<T> result(this->rows, this->cols);
-        for (size_t i = 0; i < this->rows; i++)
         {
-            for (size_t j = 0; j < this->cols; j++)
-            {
-                result(i, j) = this->data[i * this->cols + j] + num;
-            }
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            throw std::runtime_error("Null pointer detected");
         }
+        Matrix<T> result(this->rows, this->cols);
+        if (result.data == nullptr)
+        {
+            fprintf(stderr, "File %s, Line %d, Function %s(): Null Pointer Detected.\n", __FILE__, __LINE__, __FUNCTION__);
+            throw std::runtime_error("Null pointer detected");
+        }
+        size_t length = this->cols * this->rows;
+
+        for (size_t i = 0; i < length; ++i)
+        {
+            result.data[i] = this->data[i] + num;
+        }
+
         return result;
     }
     template <typename T>
@@ -245,7 +301,6 @@ namespace WellsMatrixLib
         }
     }
 
-
     /*
     Private Member Function
     */
@@ -293,5 +348,4 @@ namespace WellsMatrixLib
         }
         return originalMatrix(startRow + row, startCol + col);
     }
-
 }

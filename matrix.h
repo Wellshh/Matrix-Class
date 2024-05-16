@@ -15,12 +15,13 @@ namespace WellsMatrixLib
     private:
         size_t rows;
         size_t cols;
-        std::shared_ptr<T> data;
+        std::shared_ptr<T[]> data;
 
     public:
         Matrix(size_t, size_t);        // Constructor
         Matrix(const Matrix<T> &);     // Copy Constructor
-        T &operator()(size_t, size_t); // Acquire element of matrix
+        T& operator()(size_t, size_t);
+        T& operator()(size_t, size_t) const; // Acquire element of matrix
         size_t get_row();
         size_t get_col();
         // Matrix-Matrix Arithmetic
@@ -30,8 +31,7 @@ namespace WellsMatrixLib
         Matrix<T> operator=(const Matrix<T> &); // Shallow copy
         Matrix<T> operator+=(const Matrix<T> &);
         // Matrix-Scalar Arithmetic
-        template <typename U>
-        Matrix<T> operator+(U);
+        Matrix<T> operator+(T);
         template <typename U>
         Matrix<T> operator-(U);
         template <typename U>
@@ -42,9 +42,9 @@ namespace WellsMatrixLib
         template <typename U>
         friend std::ostream &operator<<(std::ostream &, const Matrix<U> &);
 
-        void fill(size_t, size_t, size_t, size_t, T); // Fill the designated region of the matrix with designated number
-        void fill(T);                                 // Fill the whole matrix with designated number
-
+        bool fill(size_t, size_t, size_t, size_t, T); // Fill the designated region of the matrix with designated number
+        bool fill(T);                                 // Fill the whole matrix with designated number
+        
         inline bool is_empty(); // check if the current matrix is empty
 
         /*
@@ -58,6 +58,11 @@ namespace WellsMatrixLib
     Matrix<T> operator-(double, const Matrix<T> &);
     template <typename T>
     Matrix<T> operator*(double, const Matrix<T> &);
+    /*fill() Function overloaded to non-member function*/
+    template <typename T>
+    bool fill(Matrix<T> &, size_t, size_t, size_t, size_t, T);
+    template <typename T>
+    bool fill(Matrix<T> &, T);
 
     template <typename T>
     class ROI
