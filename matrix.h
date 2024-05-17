@@ -37,7 +37,7 @@ namespace WellsMatrixLib
         // Matrix-Scalar Arithmetic
         Matrix<T> operator+(T) const;
         Matrix<T> operator-(T) const;
-        Matrix<T> operator*(T) const;
+        Matrix<T> operator*(T);
 
         bool operator==(const Matrix<T> &) const;
 
