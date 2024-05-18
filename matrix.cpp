@@ -295,6 +295,7 @@ namespace WellsMatrixLib
             throw std::runtime_error("Null pointer detected");
         }
         result.fill(0);
+#ifndef WITH_OpenBLAS
         for (size_t i = 0; i < this->rows; i++)
         {
             for (size_t k = 0; k < this->cols; k++)
@@ -305,6 +306,9 @@ namespace WellsMatrixLib
                 }
             }
         }
+#else
+        cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows, other.cols, cols, 1.0, data.get(), cols, other.data.get(), other.cols, 0.0, result.data.get(), other.cols);
+#endif
         return result;
     }
     template <typename T>
@@ -614,6 +618,7 @@ namespace WellsMatrixLib
             throw std::runtime_error("Null pointer detected");
         }
         result.fill(0);
+#ifndef WITH_OpenBLAS
         for (size_t i = 0; i < this->rows; i++)
         {
             for (size_t k = 0; k < this->cols; k++)
@@ -626,4 +631,9 @@ namespace WellsMatrixLib
         }
         return result;
     }
+#endif
+#ifdef WITH_OpenBLAS
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, rows, other.cols, cols, 1.0, data.get(), cols, other.data.get(), other.cols, 0.0, result.data.get(), other.cols);
+    return result;
+#endif
 }

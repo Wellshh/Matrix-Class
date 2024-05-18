@@ -4,7 +4,9 @@
 #include <memory>
 #include <stdexcept>
 #include <iostream>
-// #include </home/wells/OpenBLAS/OpenBLAS/cblas.h>
+#ifdef WITH_OpenBLAS
+#include </home/wells/OpenBLAS/OpenBLAS/cblas.h>
+#endif
 namespace WellsMatrixLib
 {
     template <typename T>
